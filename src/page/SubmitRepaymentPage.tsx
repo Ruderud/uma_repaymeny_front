@@ -10,13 +10,22 @@ import {
   OutlinedInput,
   InputAdornment,
 } from "@mui/material";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { postRepayment } from "../query/postRepayment";
+import { getCookieValue } from "../utils/handleCookieValue";
 
 export const SubmitRepaymentPage = () => {
   const navigation = useNavigate();
   const [checkGoogle, setCheckGoogle] = useState<boolean>(false);
   const [checkApple, setCheckApple] = useState<boolean>(false);
+
+  const [googleAmount, setGoogleAmount] = useState("");
+  const [appleAmount, setAppleAmount] = useState("");
+
+  const { enqueueSnackbar } = useSnackbar();
+
   return (
     <Paper
       elevation={5}
@@ -57,9 +66,10 @@ export const SubmitRepaymentPage = () => {
           {checkGoogle ? (
             <FormControl sx={{ m: 1 }}>
               <OutlinedInput
-                id="outlined-adornment-amount"
-                // value={values.amount}
-                // onChange={handleChange("amount")}
+                value={googleAmount}
+                onChange={(e) => {
+                  setGoogleAmount(e.target.value);
+                }}
                 startAdornment={
                   <InputAdornment position="start">₩</InputAdornment>
                 }
@@ -82,9 +92,10 @@ export const SubmitRepaymentPage = () => {
           {checkApple ? (
             <FormControl sx={{ m: 1 }}>
               <OutlinedInput
-                id="outlined-adornment-amount"
-                // value={values.amount}
-                // onChange={handleChange("amount")}
+                value={appleAmount}
+                onChange={(e) => {
+                  setAppleAmount(e.target.value);
+                }}
                 startAdornment={
                   <InputAdornment position="start">₩</InputAdornment>
                 }
@@ -112,7 +123,35 @@ export const SubmitRepaymentPage = () => {
         >
           뒤로가기
         </Button>
-        <Button variant="contained" onClick={() => {}} size="large">
+        <Button
+          variant="contained"
+          onClick={() => {
+            const accessToken = getCookieValue("accessToken");
+            if (accessToken === undefined) {
+              enqueueSnackbar("로그인 후 사용해 주세요.", {
+                variant: "warning",
+              });
+              return;
+            }
+
+            if (isNaN(Number(googleAmount)) || isNaN(Number(appleAmount))) {
+              enqueueSnackbar("숫자만 입력해야합니다.", {
+                variant: "warning",
+              });
+              return;
+            }
+
+            postRepayment({
+              token: accessToken,
+              googleAmount,
+              appleAmount,
+            });
+            enqueueSnackbar("정상적으로 제출되었습니다!", {
+              variant: "success",
+            });
+          }}
+          size="large"
+        >
           제출하기
         </Button>
       </Box>
