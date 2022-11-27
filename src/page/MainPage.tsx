@@ -85,7 +85,7 @@ export const MainPage = () => {
           }}
         >
           <Typography
-            variant="h2"
+            variant="h4"
             sx={{
               display: "flex",
               justifyContent: "center",
@@ -110,7 +110,7 @@ export const MainPage = () => {
           }}
         >
           <Typography
-            variant="h2"
+            variant="h4"
             sx={{
               display: "flex",
               justifyContent: "center",
